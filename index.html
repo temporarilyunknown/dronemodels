@@ -52,45 +52,70 @@
             opacity: 0;
         }
 
+        /* Added Loading Text */
+        #loading-text {
+            position: absolute;
+            top: calc(50% + 210px); /* Positioned neatly beneath the spinner */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffffff;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            z-index: 10;
+            opacity: 0.7;
+            transition: opacity 0.5s ease;
+        }
+
+        #loading-text.hidden {
+            opacity: 0;
+        }
+
         @keyframes spin {
             0% { transform: translate(-50%, -50%) rotate(0deg); }
             100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        /* --- Clean, Professional Top-Left UI --- */
+        /* --- Dark Header UI (Split Left/Right) --- */
         #title-container {
             position: absolute;
-            top: 5%; 
-            left: 5%;
+            top: 0; 
+            left: 0;
+            width: 100%; /* Spans full width */
+            background-color: rgba(20, 20, 20, 0.85); /* Dark header background */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle bottom edge */
+            backdrop-filter: blur(10px); /* Premium glass blur effect */
+            -webkit-backdrop-filter: blur(10px);
             display: flex;
-            flex-direction: column; 
-            align-items: flex-start; /* Aligns text and logo to the left */
+            flex-direction: row; 
+            justify-content: space-between; /* Pushes text left, logo right */
+            align-items: center; 
+            padding: 15px 5%; /* 15px top/bottom, 5% left/right margins */
+            box-sizing: border-box; /* Ensures padding doesn't stretch screen width */
             pointer-events: none;
             z-index: 10;
             
-            /* Starts hidden and slightly pushed up */
+            /* Starts hidden */
             opacity: 0;
-            transform: translateY(-15px);
-            transition: opacity 1.5s ease-out, transform 1.5s ease-out; 
+            transition: opacity 1.5s ease-out; 
         }
 
         #title-container.visible {
-            opacity: 1;
-            transform: translateY(0); /* Drops gently into place */
+            opacity: 1; /* Fades in */
         }
 
         #building-logo {
-            height: clamp(50px, 8vw, 80px); /* Clean, professional size */
+            height: clamp(35px, 5vw, 50px); /* Slightly smaller to fit nicely in a header */
             width: auto;
             mix-blend-mode: screen; 
-            margin-bottom: 5px; /* Tiny gap between logo and title */
         }
 
         #building-title {
             margin: 0;
             color: #ffffff;
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            font-size: clamp(1.2rem, 5vw, 2.2rem); 
+            font-size: clamp(1.2rem, 4vw, 1.8rem); /* Slightly adjusted for header scale */
             letter-spacing: 2px;
             opacity: 0.9;
             text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
@@ -143,10 +168,11 @@
 
     <div id="loading-overlay"></div>
     <div id="spinner"></div>
+    <div id="loading-text">Loading Model</div>
 
     <div id="title-container">
-        <img id="building-logo" src="LogoF.png" alt="Gannett Logo">
         <h1 id="building-title">Gannett Building</h1>
+        <img id="building-logo" src="LogoF.png" alt="Gannett Logo">
     </div>
 
     <div id="custom-prompt">Drag to interact</div>
@@ -176,12 +202,14 @@
         const titleContainer = document.getElementById('title-container');
         const overlay = document.getElementById('loading-overlay');
         const spinner = document.getElementById('spinner');
+        const loadingText = document.getElementById('loading-text');
         const customPrompt = document.getElementById('custom-prompt');
 
         // Animation sequence on load
         viewer.addEventListener('load', () => {
-            // 1. Hide spinner immediately
+            // 1. Hide spinner and loading text immediately
             spinner.classList.add('hidden');
+            loadingText.classList.add('hidden');
 
             // 2. Wait 800ms, then trigger black overlay fade
             setTimeout(() => {

@@ -150,8 +150,7 @@
         src="Gannett-Drive-4-10-2026-textured_model.glb" 
         ar 
         ar-modes="webxr scene-viewer quick-look" 
-        camera-controls 
-        auto-rotate 
+        camera-controls  
         rotation-per-second="3deg"
         tone-mapping="neutral" 
         poster="poster.webp" 
@@ -186,13 +185,18 @@
                 // 3. Delay the camera zoom slightly so the black overlay has time to start fading
                 // The `interpolation-decay="400"` attribute ensures this takes a few seconds to complete
                 setTimeout(() => {
-                    viewer.setAttribute('camera-orbit', '550.2deg 74.59deg 200m'); 
-                }, 400);
+                    viewer.setAttribute('camera-orbit', '580.2deg 74.59deg 350m'); 
+                }, 175);
 
                 // 4. Wait for the camera to mostly settle, then fade in the custom prompt
+                // Wait for zoom to settle (e.g., 2000 milliseconds = 2 seconds)
                 setTimeout(() => {
-                    customPrompt.classList.add('visible');
-                }, 2200);
+                customPrompt.classList.add('visible');
+    
+                    // This turns on the auto-rotation!
+                    viewer.autoRotate = true; 
+    
+                    }, 2200); // Change this number to increase or decrease the delay
 
             }, 800);
         });

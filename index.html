@@ -35,7 +35,7 @@
 
         #spinner {
             position: absolute;
-            top: calc(50% + 140px); /* Pushed further down to clear the stacked logo and text */
+            top: calc(50% + 140px);
             left: 50%;
             transform: translate(-50%, -50%);
             width: 40px;
@@ -64,10 +64,10 @@
             left: 50%;
             transform: translate(-50%, -50%); 
             display: flex;
-            flex-direction: column; /* Stacks the logo above the text */
+            flex-direction: column; 
             align-items: center;
             justify-content: center;
-            gap: 10px; /* Reduced gap since they are stacked */
+            gap: 10px; 
             pointer-events: none;
             z-index: 10;
             transition: all 1.5s ease-in-out; 
@@ -75,7 +75,6 @@
 
         #title-container.zoomed {
             top: 5%; 
-            /* Shrinks the stacked grouping slightly so it isn't overwhelming at the top */
             transform: translate(-50%, 0) scale(0.75); 
         }
 
@@ -90,12 +89,10 @@
         }
 
         #building-logo {
-            height: 120px; /* Significantly increased for the loading screen */
+            height: 120px; 
             width: auto;
-            opacity: 1; /* Bumped to 100% for better visibility */
+            opacity: 1; 
             mix-blend-mode: screen; 
-            /* Optional: If the logo is still too dark, uncomment the line below to brighten it */
-            /* filter: brightness(1.5) drop-shadow(0px 4px 10px rgba(0,0,0,0.5)); */
         }
 
         /* Custom Interaction Prompt */
@@ -104,25 +101,19 @@
             bottom: 12%;
             left: 50%;
             transform: translateX(-50%);
-            
-            /* Sleek Glassmorphism Styling */
-            background-color: rgba(20, 20, 20, 0.4); /* Highly transparent dark background */
-            backdrop-filter: blur(8px); /* Blurs the 3D model slightly behind the prompt */
-            -webkit-backdrop-filter: blur(8px); /* Safari support */
-            border: 1px solid rgba(255, 255, 255, 0.15); /* Subtle border for edge definition */
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); /* Soft, wide shadow */
-            
+            background-color: rgba(20, 20, 20, 0.4); 
+            backdrop-filter: blur(8px); 
+            -webkit-backdrop-filter: blur(8px); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); 
             color: #ffffff;
-            padding: 12px 32px; /* Wider padding looks more modern */
-            border-radius: 50px; /* Fully rounded pill shape */
-            
-            /* Typography adjustments */
+            padding: 12px 32px; 
+            border-radius: 50px; 
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            font-size: 0.9rem; /* Slightly smaller text */
+            font-size: 0.9rem; 
             font-weight: 400;
-            text-transform: uppercase; /* All caps adds to the sleek UI feel */
-            letter-spacing: 2px; /* Wider spacing pairs well with uppercase */
-            
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
             pointer-events: none;
             z-index: 10;
             opacity: 0; 
@@ -136,7 +127,7 @@
 
         @keyframes pulse {
             0% { transform: translateX(-50%) scale(1); }
-            50% { transform: translateX(-50%) scale(1.02); } /* Reduced scale jump for a more subtle pulse */
+            50% { transform: translateX(-50%) scale(1.02); } 
             100% { transform: translateX(-50%) scale(1); }
         }
     </style> 
@@ -165,12 +156,13 @@
         tone-mapping="neutral" 
         poster="poster.webp" 
         shadow-intensity="1" 
-        camera-orbit="520.2deg 74.59deg 400m" 
+        camera-orbit="520.2deg 74.59deg 700m" 
         field-of-view="12deg" 
         orientation="0 -90deg 0" 
-        max-camera-orbit="auto 90deg 400m" 
+        max-camera-orbit="auto 90deg 800m" 
         min-camera-orbit="auto auto 20.4m" 
         min-field-of-view="3deg"
+        interpolation-decay="400"
         interaction-prompt="none"> 
     </model-viewer>
 
@@ -183,20 +175,24 @@
 
         // Animation sequence on load
         viewer.addEventListener('load', () => {
-            // 1. Hide spinner
+            // 1. Hide spinner immediately
             spinner.classList.add('hidden');
 
-            // 2. Wait 800ms, then trigger zoom, fade overlay, and slide text
+            // 2. Wait 800ms, then trigger fade overlay and slide text
             setTimeout(() => {
                 overlay.classList.add('hidden'); 
-                // Changed target camera-orbit to 200m to complete the zoom IN
-                viewer.setAttribute('camera-orbit', '550.2deg 74.59deg 175m'); 
                 titleContainer.classList.add('zoomed'); 
 
-                // 3. Wait for zoom to finish (1.5s), then fade in the custom prompt
+                // 3. Delay the camera zoom slightly so the black overlay has time to start fading
+                // The `interpolation-decay="400"` attribute ensures this takes a few seconds to complete
+                setTimeout(() => {
+                    viewer.setAttribute('camera-orbit', '550.2deg 74.59deg 200m'); 
+                }, 400);
+
+                // 4. Wait for the camera to mostly settle, then fade in the custom prompt
                 setTimeout(() => {
                     customPrompt.classList.add('visible');
-                }, 1500);
+                }, 2200);
 
             }, 800);
         });

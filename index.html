@@ -139,7 +139,7 @@
     <div id="spinner"></div>
 
     <div id="title-container">
-        <img id="building-logo" src="logo.png" alt="Gannett Logo">
+        <img id="building-logo" src="Logot.png" alt="Gannett Logo">
         <h1 id="building-title">Gannett Building</h1>
     </div>
 
@@ -186,7 +186,7 @@
                 // The `interpolation-decay="400"` attribute ensures this takes a few seconds to complete
                 setTimeout(() => {
                     viewer.setAttribute('camera-orbit', '580.2deg 74.59deg 350m'); 
-                }, 175);
+                }, 50);
 
                 // 4. Wait for the camera to mostly settle, then fade in the custom prompt
                 // Wait for zoom to settle (e.g., 2000 milliseconds = 2 seconds)
@@ -196,7 +196,7 @@
                     // This turns on the auto-rotation!
                     viewer.autoRotate = true; 
     
-                    }, 3200); // Change this number to increase or decrease the delay
+                    }, 3000); // Change this number to increase or decrease the delay
 
             }, 800);
         });

@@ -36,7 +36,7 @@
         /* Added Loading Screen Logo */
         #loading-logo {
             position: absolute;
-            top: 50%;
+            top: 44%;
             left: 50%;
             transform: translate(-50%, -50%);
             height: clamp(80px, 15vw, 150px); /* Prominent size for the center screen */
@@ -52,7 +52,7 @@
 
         #spinner {
             position: absolute;
-            top: calc(50% + 140px); /* Positioned nicely below the logo */
+            top: calc(44% + 140px); /* Positioned nicely below the logo */
             left: 50%;
             transform: translate(-50%, -50%);
             width: 40px;
@@ -72,7 +72,7 @@
         /* Loading Text */
         #loading-text {
             position: absolute;
-            top: calc(50% + 210px); /* Positioned neatly beneath the spinner */
+            top: calc(44% + 210px); /* Positioned neatly beneath the spinner */
             left: 50%;
             transform: translate(-50%, -50%);
             color: #ffffff;
@@ -200,7 +200,6 @@
     <model-viewer 
         id="gannett-viewer"
         src="Gannett-Drive-4-10-2026-textured_model.glb" 
-        environment-image="skyc.hdr" 
         skybox-image="skyc.hdr"
         ar 
         ar-modes="webxr scene-viewer quick-look" 

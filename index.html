@@ -10,41 +10,73 @@
     <style>
         body { margin: 0; padding: 0; background-color: #222; overflow: hidden; }
         
-        /* Model transition (starts transparent/hidden, fades to fully opaque) */
+        /* 3D Viewer Base */
         model-viewer { 
             width: 100vw; 
             height: 100vh; 
-            opacity: .05; /* Starts hidden */
-            transition: opacity 1.5s ease-in-out;
-        }
-        
-        /* When class 'loaded' is added, model becomes fully opaque */
-        model-viewer.loaded {
-            opacity: 1;
         }
 
-        /* Center-to-Top Title & Logo Container */
+        /* Loading Screen Elements */
+        #loading-overlay {
+            position: absolute;
+            top: 0; 
+            left: 0;
+            width: 100vw; 
+            height: 100vh;
+            background-color: #222;
+            z-index: 5;
+            transition: opacity 1.5s ease-in-out;
+            pointer-events: none;
+        }
+
+        #loading-overlay.hidden {
+            opacity: 0;
+        }
+
+        #spinner {
+            position: absolute;
+            top: calc(50% + 60px);
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top: 4px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 10;
+            transition: opacity 0.5s ease;
+        }
+
+        #spinner.hidden {
+            opacity: 0;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Title & Logo Container */
         #title-container {
             position: absolute;
-            top: 50%; /* Starts perfectly in the middle */
+            top: 50%; 
             left: 50%;
             transform: translate(-50%, -50%); 
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px; /* Adds space between the logo and the text */
+            gap: 15px; 
             pointer-events: none;
             z-index: 10;
-            transition: all 1.5s ease-in-out; /* Smoothly animates the move */
+            transition: all 1.5s ease-in-out; 
         }
 
-        /* State when zoomed in */
         #title-container.zoomed {
-            top: 5%; /* Moves to the top of the screen */
+            top: 5%; 
             transform: translate(-50%, 0);
         }
 
-        /* Title styling */
         #building-title {
             margin: 0;
             color: #ffffff;
@@ -55,21 +87,55 @@
             text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
         }
 
-        /* Logo styling */
         #building-logo {
-            height: 50px; /* Change this number to make your logo bigger or smaller */
+            height: 50px; 
             width: auto;
             opacity: 0.95;
-            filter: drop-shadow(0px 4px 15px rgba(0, 0, 0, 0.8)); /* Matches the text shadow */
+            mix-blend-mode: screen; /* Removes black background */
+        }
+
+        /* Custom Interaction Prompt */
+        #custom-prompt {
+            position: absolute;
+            bottom: 12%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.65);
+            color: #ffffff;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0; 
+            transition: opacity 0.8s ease;
+            animation: pulse 2.5s infinite;
+        }
+
+        #custom-prompt.visible {
+            opacity: 1;
+        }
+
+        @keyframes pulse {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
+            100% { transform: translateX(-50%) scale(1); }
         }
     </style>
 </head>
 <body>
 
+    <div id="loading-overlay"></div>
+    <div id="spinner"></div>
+
     <div id="title-container">
         <img id="building-logo" src="Logo.png" alt="Gannett Logo">
         <h1 id="building-title">Gannett Building</h1>
     </div>
+
+    <div id="custom-prompt">👆 Click & Drag to Rotate</div>
 
     <model-viewer 
         id="gannett-viewer"
@@ -87,24 +153,40 @@
         orientation="0 -90deg 0" 
         max-camera-orbit="auto 90deg 500m" 
         min-camera-orbit="auto auto 25.4m" 
-        min-field-of-view="4deg">
-    </model-viewer>
+        min-field-of-view="4deg"
+        interaction-prompt="none"> </model-viewer>
 
     <script>
         const viewer = document.getElementById('gannett-viewer');
         const titleContainer = document.getElementById('title-container');
+        const overlay = document.getElementById('loading-overlay');
+        const spinner = document.getElementById('spinner');
+        const customPrompt = document.getElementById('custom-prompt');
 
-        // Wait for the 3D model to fully load
+        // Animation sequence on load
         viewer.addEventListener('load', () => {
-            // Fade the model in (makes it fully opaque)
-            viewer.classList.add('loaded');
+            // 1. Hide spinner
+            spinner.classList.add('hidden');
 
-            // Wait a split second, then trigger the zoom and slide the title to the top
+            // 2. Wait 800ms, then trigger zoom, fade overlay, and slide text
             setTimeout(() => {
-                // Ensure the zoom-in angle (490.2deg) matches your new starting angle so it zooms straight in
-                viewer.setAttribute('camera-orbit', '550.2deg 74.59deg 340.4m');
-                titleContainer.classList.add('zoomed');
+                overlay.classList.add('hidden'); 
+                viewer.setAttribute('camera-orbit', '550.2deg 74.59deg 340.4m'); 
+                titleContainer.classList.add('zoomed'); 
+
+                // 3. Wait for zoom to finish (1.5s), then fade in the custom prompt
+                setTimeout(() => {
+                    customPrompt.classList.add('visible');
+                }, 1500);
+
             }, 800);
+        });
+
+        // Hide custom prompt the moment the user interacts
+        viewer.addEventListener('camera-change', (event) => {
+            if (event.detail.source === 'user-interaction') {
+                customPrompt.classList.remove('visible');
+            }
         });
     </script>
 

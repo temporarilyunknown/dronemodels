@@ -3,35 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ganett Building</title>
+    <title>Gannett Building</title>
     
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     
     <style>
-        /* This removes default white borders and makes the model fill the whole screen */
         body { margin: 0; padding: 0; background-color: #222; overflow: hidden; }
-        model-viewer { width: 100vw; height: 100vh; } 
         
-        /* Floating title styles */
-        #building-title {
+        /* Model transition (starts transparent/hidden, fades to fully opaque) */
+        model-viewer { 
+            width: 100vw; 
+            height: 100vh; 
+            opacity: 0; /* Starts hidden */
+            transition: opacity 1.5s ease-in-out;
+        }
+        
+        /* When class 'loaded' is added, model becomes fully opaque */
+        model-viewer.loaded {
+            opacity: 1;
+        }
+
+        /* Center-to-Top Title & Logo Container */
+        #title-container {
             position: absolute;
-            top: 5%;
-            width: 100%;
-            text-align: center;
+            top: 50%; /* Starts perfectly in the middle */
+            left: 50%;
+            transform: translate(-50%, -50%); 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px; /* Adds space between the logo and the text */
+            pointer-events: none;
+            z-index: 10;
+            transition: all 1.5s ease-in-out; /* Smoothly animates the move */
+        }
+
+        /* State when zoomed in */
+        #title-container.zoomed {
+            top: 5%; /* Moves to the top of the screen */
+            transform: translate(-50%, 0);
+        }
+
+        /* Title styling */
+        #building-title {
+            margin: 0;
             color: #ffffff;
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             font-size: 2.5rem;
             letter-spacing: 2px;
-            pointer-events: none; /* Prevents the text from blocking your mouse from spinning the model */
-            z-index: 10;
             opacity: 0.85;
-            text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8); /* Helps blend it into the background dynamically */
+            text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Logo styling */
+        #building-logo {
+            height: 50px; /* Change this number to make your logo bigger or smaller */
+            width: auto;
+            opacity: 0.9;
+            filter: drop-shadow(0px 4px 15px rgba(0, 0, 0, 0.8)); /* Matches the text shadow */
         }
     </style>
 </head>
 <body>
 
-    <h1 id="building-title">Ganett Building</h1>
+    <div id="title-container">
+        <img id="building-logo" src="logo.png" alt="Gannett Logo">
+        <h1 id="building-title">Gannett Building</h1>
+    </div>
 
     <model-viewer 
         id="gannett-viewer"
@@ -40,26 +78,32 @@
         ar-modes="webxr scene-viewer quick-look" 
         camera-controls 
         auto-rotate 
+        rotation-per-second="3.75deg"
         tone-mapping="neutral" 
         poster="poster.webp" 
         shadow-intensity="1" 
-        camera-orbit="670.2deg 74.59deg 800m" 
+        camera-orbit="490.2deg 74.59deg 550m" 
         field-of-view="12deg" 
         orientation="0 -90deg 0" 
-        max-camera-orbit="auto 90deg 800m" 
-        min-camera-orbit="auto auto 340.4m" 
-        min-field-of-view="12deg">
+        max-camera-orbit="auto 90deg 700m" 
+        min-camera-orbit="auto auto 300.4m" 
+        min-field-of-view="5deg">
     </model-viewer>
 
     <script>
         const viewer = document.getElementById('gannett-viewer');
+        const titleContainer = document.getElementById('title-container');
 
         // Wait for the 3D model to fully load
         viewer.addEventListener('load', () => {
-            // A short 800ms delay lets the user process the title and zoomed-out state
+            // Fade the model in (makes it fully opaque)
+            viewer.classList.add('loaded');
+
+            // Wait a split second, then trigger the zoom and slide the title to the top
             setTimeout(() => {
-                // Changing the camera-orbit dynamically forces <model-viewer> to smoothly animate to the new position
-                viewer.setAttribute('camera-orbit', '670.2deg 74.59deg 340.4m');
+                // Ensure the zoom-in angle (490.2deg) matches your new starting angle so it zooms straight in
+                viewer.setAttribute('camera-orbit', '490.2deg 74.59deg 340.4m');
+                titleContainer.classList.add('zoomed');
             }, 800);
         });
     </script>

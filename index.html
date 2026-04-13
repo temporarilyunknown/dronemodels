@@ -60,25 +60,35 @@
         /* Title & Logo Container */
         #title-container {
             position: absolute;
-            top: 50%; 
-            left: 50%;
-            transform: translate(-50%, -50%); 
-            display: flex;
-            flex-direction: column; 
-            align-items: center;
-            justify-content: center;
-            gap: 10px; 
+            top: 0; 
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             pointer-events: none;
             z-index: 10;
+        }
+
+        #building-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            /* Translates it perfectly above the center point */
+            transform: translate(-50%, -100%);
+            margin-top: -5px; /* Creates a 10px gap between logo and title */
+            height: 120px; 
+            width: auto;
+            opacity: 1; 
+            mix-blend-mode: screen; 
             transition: all 1.5s ease-in-out; 
         }
 
-        #title-container.zoomed {
-            top: 5%; 
-            transform: translate(-50%, 0) scale(0.75); 
-        }
-
         #building-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            /* Translates it perfectly below the center point */
+            transform: translate(-50%, 0);
+            margin-top: 5px; /* Creates a 10px gap between logo and title */
             margin: 0;
             color: #ffffff;
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -86,13 +96,23 @@
             letter-spacing: 2px;
             opacity: 0.85;
             text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
+            transition: all 1.5s ease-in-out;
+            white-space: nowrap; /* Prevents text from breaking onto two lines during animation */
         }
 
-        #building-logo {
-            height: 120px; 
-            width: auto;
-            opacity: 1; 
-            mix-blend-mode: screen; 
+        /* End States when .zoomed is applied to the container */
+        #title-container.zoomed #building-logo {
+            top: 4%; 
+            left: 95%; /* Pushes to the right edge */
+            transform: translate(-100%, 0) scale(0.70);
+            margin-top: 0;
+        }
+
+        #title-container.zoomed #building-title {
+            top: 5%; 
+            left: 50%; /* Keeps it centered */
+            transform: translate(-50%, 0) scale(0.75); 
+            margin-top: 0;
         }
 
         /* Custom Interaction Prompt */
@@ -159,13 +179,13 @@
         tone-mapping="neutral" 
         poster="poster.webp" 
         shadow-intensity="1" 
-        camera-orbit="520.2deg 74.59deg 700m" 
+        camera-orbit="520.2deg 74.59deg 675m" 
         field-of-view="12deg" 
         orientation="0 -90deg 0" 
-        max-camera-orbit="auto 90deg 800m" 
-        min-camera-orbit="auto auto 20.4m" 
-        min-field-of-view="2.5deg"
-        interpolation-decay="200"
+        max-camera-orbit="auto 90deg 700m" 
+        min-camera-orbit="auto auto 100.4m" 
+        min-field-of-view="4deg"
+        interpolation-decay="575"
         interaction-prompt="none"> 
     </model-viewer>
 
@@ -187,20 +207,22 @@
                 titleContainer.classList.add('zoomed'); 
 
                 // 3. Delay the camera zoom slightly so the black overlay has time to start fading
-                // The `interpolation-decay="400"` attribute ensures this takes a few seconds to complete
                 setTimeout(() => {
-                    viewer.setAttribute('camera-orbit', '582.2deg 74.59deg 350m'); 
+                    // Pushed zoom in closer to 180m
+                    viewer.setAttribute('camera-orbit', '582.2deg 74.59deg 260m'); 
                 }, 350);
 
                 // 4. Wait for the camera to mostly settle, then fade in the custom prompt
-                // Wait for zoom to settle (e.g., 2000 milliseconds = 2 seconds)
                 setTimeout(() => {
-                customPrompt.classList.add('visible');
-    
+                    customPrompt.classList.add('visible');
+                    
                     // This turns on the auto-rotation!
                     viewer.autoRotate = true; 
-    
-                    }, 3000); // Change this number to increase or decrease the delay
+                    
+                    // RESTORE DRAG SPEED: Switch decay to 100 so mouse interaction is fast and responsive
+                    viewer.setAttribute('interpolation-decay', '175'); 
+                    
+                }, 3200); // Trigger this when the zoom is roughly finishing
 
             }, 800);
         });

@@ -26,53 +26,55 @@
             background-color: #222;
             z-index: 5;
             transition: opacity 1.5s ease-in-out;
-            pointer-events: none;
+            /* Changed: Removed pointer-events: none so it blocks clicks while loading */
         }
 
         #loading-overlay.hidden {
             opacity: 0;
+            pointer-events: none; /* Add it here so clicks pass through AFTER it hides */
         }
 
-        /* Added Loading Screen Logo */
         #loading-logo {
             position: absolute;
             top: 44%;
             left: 50%;
             transform: translate(-50%, -50%);
-            height: clamp(80px, 15vw, 150px); /* Prominent size for the center screen */
+            height: clamp(80px, 15vw, 150px);
             width: auto;
             mix-blend-mode: screen;
-            z-index: 10;
-            transition: opacity 0.5s ease; /* Matches spinner fade speed */
-        }
-
-        #loading-logo.hidden {
-            opacity: 0;
-        }
-
-        #spinner {
-            position: absolute;
-            top: calc(44% + 140px); /* Positioned nicely below the logo */
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.2);
-            border-top: 4px solid #ffffff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
             z-index: 10;
             transition: opacity 0.5s ease;
         }
 
-        #spinner.hidden {
-            opacity: 0;
+        #loading-logo.hidden { opacity: 0; }
+
+        /* Spinner replaced with Progress Bar for better UX */
+        #progress-container {
+            position: absolute;
+            top: calc(44% + 140px);
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            z-index: 10;
+            overflow: hidden;
+            transition: opacity 0.5s ease;
         }
 
-        /* Loading Text */
+        #progress-container.hidden { opacity: 0; }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #ffffff;
+            transition: width 0.1s linear;
+        }
+
         #loading-text {
             position: absolute;
-            top: calc(44% + 210px); /* Positioned neatly beneath the spinner */
+            top: calc(44% + 170px); /* Adjusted spacing */
             left: 50%;
             transform: translate(-50%, -50%);
             color: #ffffff;
@@ -85,45 +87,34 @@
             transition: opacity 0.5s ease;
         }
 
-        #loading-text.hidden {
-            opacity: 0;
-        }
+        #loading-text.hidden { opacity: 0; }
 
-        @keyframes spin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        /* --- Dark Header UI (Split Left/Right) --- */
+        /* --- Dark Header UI --- */
         #title-container {
             position: absolute;
             top: 0; 
             left: 0;
-            width: 100%; /* Spans full width */
-            background-color: rgba(20, 20, 20, 0.85); /* Dark header background */
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle bottom edge */
-            backdrop-filter: blur(10px); /* Premium glass blur effect */
+            width: 100%;
+            background-color: rgba(20, 20, 20, 0.85);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             display: flex;
             flex-direction: row; 
-            justify-content: space-between; /* Pushes text left, logo right */
+            justify-content: space-between;
             align-items: center; 
-            padding: 15px 5%; /* 15px top/bottom, 5% left/right margins */
-            box-sizing: border-box; /* Ensures padding doesn't stretch screen width */
+            padding: 15px 5%;
+            box-sizing: border-box;
             pointer-events: none;
             z-index: 10;
-            
-            /* Starts hidden */
             opacity: 0;
             transition: opacity 1.5s ease-out; 
         }
 
-        #title-container.visible {
-            opacity: 1; /* Fades in */
-        }
+        #title-container.visible { opacity: 1; }
 
         #building-logo {
-            height: clamp(35px, 5vw, 50px); /* Slightly smaller to fit nicely in a header */
+            height: clamp(35px, 5vw, 50px);
             width: auto;
             mix-blend-mode: screen; 
         }
@@ -132,7 +123,7 @@
             margin: 0;
             color: #ffffff;
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            font-size: clamp(1.2rem, 4vw, 1.8rem); /* Slightly adjusted for header scale */
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
             letter-spacing: 2px;
             opacity: 0.9;
             text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
@@ -169,9 +160,7 @@
             animation: pulse 2.5s infinite;
         }
 
-        #custom-prompt.visible {
-            opacity: 1;
-        }
+        #custom-prompt.visible { opacity: 1; }
 
         @keyframes pulse {
             0% { transform: translateX(-50%) scale(1); }
@@ -187,8 +176,10 @@
     
     <img id="loading-logo" src="LogoF.png" alt="Loading Logo">
     
-    <div id="spinner"></div>
-    <div id="loading-text">Loading Model</div>
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+    <div id="loading-text">Loading 0%</div>
 
     <div id="title-container">
         <h1 id="building-title">Gannett Building</h1>
@@ -200,10 +191,10 @@
     <model-viewer 
         id="gannett-viewer"
         src="Gannett-Drive-4-10-2026-textured_model.glb" 
-        skybox-image="skyc.hdr"
+        skybox-image="skycomp.hdr"
+        environment-image="skycomp.hdr"
         ar 
-        ar-modes="webxr scene-viewer quick-look" 
-        camera-controls  
+        ar-modes="webxr scene-viewer quick-look"  
         rotation-per-second="3deg"
         tone-mapping="neutral" 
         poster="poster.webp" 
@@ -223,51 +214,58 @@
         const titleContainer = document.getElementById('title-container');
         const overlay = document.getElementById('loading-overlay');
         const loadingLogo = document.getElementById('loading-logo');
-        const spinner = document.getElementById('spinner');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
         const loadingText = document.getElementById('loading-text');
         const customPrompt = document.getElementById('custom-prompt');
 
+        // Update progress bar and text while downloading
+        viewer.addEventListener('progress', (event) => {
+            const percent = Math.round(event.detail.totalProgress * 100);
+            loadingText.textContent = `LOADING ${percent}%`;
+            progressBar.style.width = `${percent}%`;
+        });
+
         // Animation sequence on load
         viewer.addEventListener('load', () => {
-            // 1. Hide logo, spinner, and loading text immediately
+            // 1. Hide logo, progress bar, and loading text immediately
             loadingLogo.classList.add('hidden');
-            spinner.classList.add('hidden');
+            progressContainer.classList.add('hidden');
             loadingText.classList.add('hidden');
 
             // 2. Wait 800ms, then trigger black overlay fade
             setTimeout(() => {
                 overlay.classList.add('hidden'); 
 
-                // Delay the UI fade-in just a fraction of a second so it happens as the model appears
+                // Delay the UI fade-in just a fraction of a second
                 setTimeout(() => {
                     titleContainer.classList.add('visible'); 
                 }, 300);
 
-                // Delay the camera zoom slightly so the black overlay has time to start fading
+                // Delay the camera zoom slightly
                 setTimeout(() => {
                     viewer.setAttribute('camera-orbit', '582.2deg 74.59deg 255m'); 
                 }, 400);
 
-                // 4. Wait for the camera to mostly settle, then fade in the custom prompt
+                // 4. Wait for the camera to mostly settle
                 setTimeout(() => {
                     customPrompt.classList.add('visible');
                     
-                    // This turns on the auto-rotation!
+                    // Turn on auto-rotation
                     viewer.autoRotate = true; 
+                    
+                    // ENABLE CAMERA CONTROLS NOW
+                    viewer.setAttribute('camera-controls', '');
                     
                 }, 3200); 
 
             }, 800);
         });
 
-        // Hide custom prompt the moment the user interacts AND fix interaction speed
+        // Hide custom prompt the moment the user interacts
         viewer.addEventListener('camera-change', (event) => {
             if (event.detail.source === 'user-interaction') {
-                
-                // Hide the prompt
                 customPrompt.classList.remove('visible');
-                
-                // Switch to fast, responsive dragging instantly
                 viewer.setAttribute('interpolation-decay', '100');
             }
         });

@@ -3,19 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Building Viewer</title>
+    <title>Ganett Building</title>
     
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     
     <style>
         /* This removes default white borders and makes the model fill the whole screen */
-        body { margin: 0; padding: 0; background-color: #222; }
+        body { margin: 0; padding: 0; background-color: #222; overflow: hidden; }
         model-viewer { width: 100vw; height: 100vh; } 
+        
+        /* Floating title styles */
+        #building-title {
+            position: absolute;
+            top: 5%;
+            width: 100%;
+            text-align: center;
+            color: #ffffff;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            pointer-events: none; /* Prevents the text from blocking your mouse from spinning the model */
+            z-index: 10;
+            opacity: 0.85;
+            text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8); /* Helps blend it into the background dynamically */
+        }
     </style>
 </head>
 <body>
 
+    <h1 id="building-title">Ganett Building</h1>
+
     <model-viewer 
+        id="gannett-viewer"
         src="Gannett-Drive-4-10-2026-textured_model.glb" 
         ar 
         ar-modes="webxr scene-viewer quick-look" 
@@ -24,15 +43,26 @@
         tone-mapping="neutral" 
         poster="poster.webp" 
         shadow-intensity="1" 
-        camera-orbit="670.2deg 74.59deg 340.4m" 
+        camera-orbit="670.2deg 74.59deg 800m" 
         field-of-view="12deg" 
         orientation="0 -90deg 0" 
-        max-camera-orbit="auto 90deg auto" 
+        max-camera-orbit="auto 90deg 800m" 
         min-camera-orbit="auto auto 340.4m" 
-        min-field-of-view="12deg"
-        skybox-image="https://modelviewer.dev/shared-assets/environments/whipple_creek_regional_park_1k_HDR.jpg"
-        skybox-height="10m">
+        min-field-of-view="12deg">
     </model-viewer>
+
+    <script>
+        const viewer = document.getElementById('gannett-viewer');
+
+        // Wait for the 3D model to fully load
+        viewer.addEventListener('load', () => {
+            // A short 800ms delay lets the user process the title and zoomed-out state
+            setTimeout(() => {
+                // Changing the camera-orbit dynamically forces <model-viewer> to smoothly animate to the new position
+                viewer.setAttribute('camera-orbit', '670.2deg 74.59deg 340.4m');
+            }, 800);
+        });
+    </script>
 
 </body>
 </html>

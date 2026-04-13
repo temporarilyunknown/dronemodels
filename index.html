@@ -57,76 +57,44 @@
             100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        /* --- Title & Logo Container (Stage 1: Center) --- */
+        /* --- Clean, Professional Top-Left UI --- */
         #title-container {
             position: absolute;
-            top: 50%; 
-            left: 50%;
-            transform: translate(-50%, -50%); 
-            width: 100vw;
+            top: 5%; 
+            left: 5%;
             display: flex;
             flex-direction: column; 
-            align-items: center;
-            justify-content: center;
+            align-items: flex-start; /* Aligns text and logo to the left */
             pointer-events: none;
             z-index: 10;
-            opacity: 1;
-            transition: opacity 0.6s ease-in-out; /* Speed of the fade out */
-        }
-
-        /* Fades out the center elements */
-        #title-container.fade-out {
+            
+            /* Starts hidden and slightly pushed up */
             opacity: 0;
+            transform: translateY(-15px);
+            transition: opacity 1.5s ease-out, transform 1.5s ease-out; 
         }
 
-        /* --- Title & Logo Container (Stage 2: Top Bar Drop-in) --- */
-        #title-container.top-bar {
-            top: 0; 
-            left: 0;
-            transform: translateY(-20px); /* Starts slightly raised up */
-            flex-direction: row; 
-            justify-content: center; /* Keeps Title precisely in center */
-            padding: 25px 5%; /* 5% padding keeps items off the screen edges on mobile */
-            box-sizing: border-box;
-            opacity: 0; /* Hidden until drop-in */
-            /* Smooth drop-in animation */
-            transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 1.2s ease-out; 
-        }
-
-        #title-container.top-bar.visible {
+        #title-container.visible {
             opacity: 1;
-            transform: translateY(0); /* Drops down into place */
+            transform: translateY(0); /* Drops gently into place */
         }
 
-        /* Building Logo Base Styles */
         #building-logo {
-            /* clamp() ensures it scales down for mobile but stays 120px max on desktop */
-            height: clamp(80px, 15vw, 120px); 
+            height: clamp(50px, 8vw, 80px); /* Clean, professional size */
             width: auto;
             mix-blend-mode: screen; 
-            margin-bottom: 15px;
+            margin-bottom: 5px; /* Tiny gap between logo and title */
         }
 
-        /* Building Title Base Styles */
         #building-title {
             margin: 0;
             color: #ffffff;
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            /* clamp() prevents text from ever clipping on narrow phone screens */
-            font-size: clamp(1.2rem, 5vw, 2.5rem); 
+            font-size: clamp(1.2rem, 5vw, 2.2rem); 
             letter-spacing: 2px;
-            opacity: 0.85;
+            opacity: 0.9;
             text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
             white-space: nowrap; 
-        }
-
-        /* Adjust Logo specific to the Top Bar layout */
-        #title-container.top-bar #building-logo {
-            position: absolute;
-            right: 5%; /* Anchors it to the top right */
-            top: 25px; /* Matches container padding */
-            height: clamp(40px, 8vw, 70px); /* Scales logo nicely for top bar */
-            margin-bottom: 0;
         }
 
         /* Custom Interaction Prompt */
@@ -215,22 +183,14 @@
             // 1. Hide spinner immediately
             spinner.classList.add('hidden');
 
-            // 2. Wait 800ms, then trigger black overlay fade AND center text fade out
+            // 2. Wait 800ms, then trigger black overlay fade
             setTimeout(() => {
                 overlay.classList.add('hidden'); 
-                titleContainer.classList.add('fade-out'); // Stage 1: Fade out from center
 
-                // 3. Wait for the center fade out to finish (600ms), then prep the top bar
+                // Delay the UI fade-in just a fraction of a second so it happens as the model appears
                 setTimeout(() => {
-                    titleContainer.classList.remove('fade-out'); // Reset class
-                    titleContainer.classList.add('top-bar'); // Changes layout to top-bar
-
-                    // Tiny delay to let the browser register the new layout, then drop in!
-                    setTimeout(() => {
-                        titleContainer.classList.add('visible'); // Stage 2: Drops in from top
-                    }, 50);
-
-                }, 600);
+                    titleContainer.classList.add('visible'); 
+                }, 300);
 
                 // Delay the camera zoom slightly so the black overlay has time to start fading
                 setTimeout(() => {

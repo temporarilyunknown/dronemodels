@@ -57,62 +57,76 @@
             100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        /* Title & Logo Container */
+        /* --- Title & Logo Container (Stage 1: Center) --- */
         #title-container {
             position: absolute;
-            top: 0; 
-            left: 0;
+            top: 50%; 
+            left: 50%;
+            transform: translate(-50%, -50%); 
             width: 100vw;
-            height: 100vh;
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+            justify-content: center;
             pointer-events: none;
             z-index: 10;
+            opacity: 1;
+            transition: opacity 0.6s ease-in-out; /* Speed of the fade out */
         }
 
+        /* Fades out the center elements */
+        #title-container.fade-out {
+            opacity: 0;
+        }
+
+        /* --- Title & Logo Container (Stage 2: Top Bar Drop-in) --- */
+        #title-container.top-bar {
+            top: 0; 
+            left: 0;
+            transform: translateY(-20px); /* Starts slightly raised up */
+            flex-direction: row; 
+            justify-content: center; /* Keeps Title precisely in center */
+            padding: 25px 5%; /* 5% padding keeps items off the screen edges on mobile */
+            box-sizing: border-box;
+            opacity: 0; /* Hidden until drop-in */
+            /* Smooth drop-in animation */
+            transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 1.2s ease-out; 
+        }
+
+        #title-container.top-bar.visible {
+            opacity: 1;
+            transform: translateY(0); /* Drops down into place */
+        }
+
+        /* Building Logo Base Styles */
         #building-logo {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            /* Translates it perfectly above the center point */
-            transform: translate(-50%, -100%);
-            margin-top: -5px; /* Creates a 10px gap between logo and title */
-            height: 120px; 
+            /* clamp() ensures it scales down for mobile but stays 120px max on desktop */
+            height: clamp(80px, 15vw, 120px); 
             width: auto;
-            opacity: 1; 
             mix-blend-mode: screen; 
-            transition: all 1.5s ease-in-out; 
+            margin-bottom: 15px;
         }
 
+        /* Building Title Base Styles */
         #building-title {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            /* Translates it perfectly below the center point */
-            transform: translate(-50%, 0);
-            margin-top: 5px; /* Creates a 10px gap between logo and title */
             margin: 0;
             color: #ffffff;
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            font-size: 2.5rem;
+            /* clamp() prevents text from ever clipping on narrow phone screens */
+            font-size: clamp(1.2rem, 5vw, 2.5rem); 
             letter-spacing: 2px;
             opacity: 0.85;
             text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
-            transition: all 1.5s ease-in-out;
-            white-space: nowrap; /* Prevents text from breaking onto two lines during animation */
+            white-space: nowrap; 
         }
 
-        /* End States when .zoomed is applied to the container */
-        #title-container.zoomed #building-logo {
-            top: 4%; 
-            left: 95%; /* Pushes to the right edge */
-            transform: translate(-100%, 0) scale(0.70);
-            margin-top: 0;
-        }
-
-        #title-container.zoomed #building-title {
-            top: 5%; 
-            left: 50%; /* Keeps it centered */
-            transform: translate(-50%, 0) scale(0.75); 
-            margin-top: 0;
+        /* Adjust Logo specific to the Top Bar layout */
+        #title-container.top-bar #building-logo {
+            position: absolute;
+            right: 5%; /* Anchors it to the top right */
+            top: 25px; /* Matches container padding */
+            height: clamp(40px, 8vw, 70px); /* Scales logo nicely for top bar */
+            margin-bottom: 0;
         }
 
         /* Custom Interaction Prompt */
@@ -201,16 +215,27 @@
             // 1. Hide spinner immediately
             spinner.classList.add('hidden');
 
-            // 2. Wait 800ms, then trigger fade overlay and slide text
+            // 2. Wait 800ms, then trigger black overlay fade AND center text fade out
             setTimeout(() => {
                 overlay.classList.add('hidden'); 
-                titleContainer.classList.add('zoomed'); 
+                titleContainer.classList.add('fade-out'); // Stage 1: Fade out from center
 
-                // 3. Delay the camera zoom slightly so the black overlay has time to start fading
+                // 3. Wait for the center fade out to finish (600ms), then prep the top bar
                 setTimeout(() => {
-                    // Pushed zoom in closer to 180m
-                    viewer.setAttribute('camera-orbit', '582.2deg 74.59deg 260m'); 
-                }, 350);
+                    titleContainer.classList.remove('fade-out'); // Reset class
+                    titleContainer.classList.add('top-bar'); // Changes layout to top-bar
+
+                    // Tiny delay to let the browser register the new layout, then drop in!
+                    setTimeout(() => {
+                        titleContainer.classList.add('visible'); // Stage 2: Drops in from top
+                    }, 50);
+
+                }, 600);
+
+                // Delay the camera zoom slightly so the black overlay has time to start fading
+                setTimeout(() => {
+                    viewer.setAttribute('camera-orbit', '582.2deg 74.59deg 255m'); 
+                }, 400);
 
                 // 4. Wait for the camera to mostly settle, then fade in the custom prompt
                 setTimeout(() => {
@@ -219,18 +244,20 @@
                     // This turns on the auto-rotation!
                     viewer.autoRotate = true; 
                     
-                    // RESTORE DRAG SPEED: Switch decay to 100 so mouse interaction is fast and responsive
-                    viewer.setAttribute('interpolation-decay', '175'); 
-                    
-                }, 3200); // Trigger this when the zoom is roughly finishing
+                }, 3200); 
 
             }, 800);
         });
 
-        // Hide custom prompt the moment the user interacts
+        // Hide custom prompt the moment the user interacts AND fix interaction speed
         viewer.addEventListener('camera-change', (event) => {
             if (event.detail.source === 'user-interaction') {
+                
+                // Hide the prompt
                 customPrompt.classList.remove('visible');
+                
+                // Switch to fast, responsive dragging instantly
+                viewer.setAttribute('interpolation-decay', '100');
             }
         });
     </script>

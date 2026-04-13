@@ -14,7 +14,7 @@
         model-viewer { 
             width: 100vw; 
             height: 100vh; 
-            opacity: 0; /* Starts hidden */
+            opacity: .05; /* Starts hidden */
             transition: opacity 1.5s ease-in-out;
         }
         
@@ -59,7 +59,7 @@
         #building-logo {
             height: 50px; /* Change this number to make your logo bigger or smaller */
             width: auto;
-            opacity: 0.9;
+            opacity: 0.95;
             filter: drop-shadow(0px 4px 15px rgba(0, 0, 0, 0.8)); /* Matches the text shadow */
         }
     </style>
@@ -67,7 +67,7 @@
 <body>
 
     <div id="title-container">
-        <img id="building-logo" src="logo.png" alt="Gannett Logo">
+        <img id="building-logo" src="Logo.png" alt="Gannett Logo">
         <h1 id="building-title">Gannett Building</h1>
     </div>
 
@@ -78,16 +78,16 @@
         ar-modes="webxr scene-viewer quick-look" 
         camera-controls 
         auto-rotate 
-        rotation-per-second="3.75deg"
+        rotation-per-second="3deg"
         tone-mapping="neutral" 
         poster="poster.webp" 
         shadow-intensity="1" 
-        camera-orbit="490.2deg 74.59deg 550m" 
+        camera-orbit="490.2deg 74.59deg 300m" 
         field-of-view="12deg" 
         orientation="0 -90deg 0" 
-        max-camera-orbit="auto 90deg 700m" 
-        min-camera-orbit="auto auto 300.4m" 
-        min-field-of-view="5deg">
+        max-camera-orbit="auto 90deg 500m" 
+        min-camera-orbit="auto auto 25.4m" 
+        min-field-of-view="4deg">
     </model-viewer>
 
     <script>
@@ -102,7 +102,7 @@
             // Wait a split second, then trigger the zoom and slide the title to the top
             setTimeout(() => {
                 // Ensure the zoom-in angle (490.2deg) matches your new starting angle so it zooms straight in
-                viewer.setAttribute('camera-orbit', '490.2deg 74.59deg 340.4m');
+                viewer.setAttribute('camera-orbit', '420.2deg 74.59deg 340.4m');
                 titleContainer.classList.add('zoomed');
             }, 800);
         });

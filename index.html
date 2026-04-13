@@ -33,9 +33,26 @@
             opacity: 0;
         }
 
+        /* Added Loading Screen Logo */
+        #loading-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            height: clamp(80px, 15vw, 150px); /* Prominent size for the center screen */
+            width: auto;
+            mix-blend-mode: screen;
+            z-index: 10;
+            transition: opacity 0.5s ease; /* Matches spinner fade speed */
+        }
+
+        #loading-logo.hidden {
+            opacity: 0;
+        }
+
         #spinner {
             position: absolute;
-            top: calc(50% + 140px);
+            top: calc(50% + 140px); /* Positioned nicely below the logo */
             left: 50%;
             transform: translate(-50%, -50%);
             width: 40px;
@@ -52,7 +69,7 @@
             opacity: 0;
         }
 
-        /* Added Loading Text */
+        /* Loading Text */
         #loading-text {
             position: absolute;
             top: calc(50% + 210px); /* Positioned neatly beneath the spinner */
@@ -167,6 +184,9 @@
 <body>
 
     <div id="loading-overlay"></div>
+    
+    <img id="loading-logo" src="LogoF.png" alt="Loading Logo">
+    
     <div id="spinner"></div>
     <div id="loading-text">Loading Model</div>
 
@@ -201,13 +221,15 @@
         const viewer = document.getElementById('gannett-viewer');
         const titleContainer = document.getElementById('title-container');
         const overlay = document.getElementById('loading-overlay');
+        const loadingLogo = document.getElementById('loading-logo');
         const spinner = document.getElementById('spinner');
         const loadingText = document.getElementById('loading-text');
         const customPrompt = document.getElementById('custom-prompt');
 
         // Animation sequence on load
         viewer.addEventListener('load', () => {
-            // 1. Hide spinner and loading text immediately
+            // 1. Hide logo, spinner, and loading text immediately
+            loadingLogo.classList.add('hidden');
             spinner.classList.add('hidden');
             loadingText.classList.add('hidden');
 

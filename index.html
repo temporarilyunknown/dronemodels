@@ -35,7 +35,7 @@
 
         #spinner {
             position: absolute;
-            top: calc(50% + 60px);
+            top: calc(50% + 140px); /* Pushed further down to clear the stacked logo and text */
             left: 50%;
             transform: translate(-50%, -50%);
             width: 40px;
@@ -148,7 +148,7 @@
     <div id="spinner"></div>
 
     <div id="title-container">
-        <img id="building-logo" src="Logo.png" alt="Gannett Logo">
+        <img id="building-logo" src="logo.png" alt="Gannett Logo">
         <h1 id="building-title">Gannett Building</h1>
     </div>
 
@@ -165,12 +165,12 @@
         tone-mapping="neutral" 
         poster="poster.webp" 
         shadow-intensity="1" 
-        camera-orbit="490.2deg 74.59deg 300m" 
+        camera-orbit="520.2deg 74.59deg 400m" 
         field-of-view="12deg" 
         orientation="0 -90deg 0" 
-        max-camera-orbit="auto 90deg 500m" 
-        min-camera-orbit="auto auto 25.4m" 
-        min-field-of-view="4deg"
+        max-camera-orbit="auto 90deg 400m" 
+        min-camera-orbit="auto auto 20.4m" 
+        min-field-of-view="3deg"
         interaction-prompt="none"> 
     </model-viewer>
 
@@ -189,7 +189,8 @@
             // 2. Wait 800ms, then trigger zoom, fade overlay, and slide text
             setTimeout(() => {
                 overlay.classList.add('hidden'); 
-                viewer.setAttribute('camera-orbit', '550.2deg 74.59deg 340.4m'); 
+                // Changed target camera-orbit to 200m to complete the zoom IN
+                viewer.setAttribute('camera-orbit', '550.2deg 74.59deg 175m'); 
                 titleContainer.classList.add('zoomed'); 
 
                 // 3. Wait for zoom to finish (1.5s), then fade in the custom prompt

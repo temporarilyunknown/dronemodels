@@ -97,6 +97,10 @@
 
         /* Custom Interaction Prompt */
         #custom-prompt {
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center;
             position: absolute;
             bottom: 12%;
             left: 50%;
@@ -160,8 +164,8 @@
         orientation="0 -90deg 0" 
         max-camera-orbit="auto 90deg 800m" 
         min-camera-orbit="auto auto 20.4m" 
-        min-field-of-view="3deg"
-        interpolation-decay="400"
+        min-field-of-view="2.5deg"
+        interpolation-decay="200"
         interaction-prompt="none"> 
     </model-viewer>
 
@@ -185,8 +189,8 @@
                 // 3. Delay the camera zoom slightly so the black overlay has time to start fading
                 // The `interpolation-decay="400"` attribute ensures this takes a few seconds to complete
                 setTimeout(() => {
-                    viewer.setAttribute('camera-orbit', '580.2deg 74.59deg 350m'); 
-                }, 50);
+                    viewer.setAttribute('camera-orbit', '582.2deg 74.59deg 350m'); 
+                }, 350);
 
                 // 4. Wait for the camera to mostly settle, then fade in the custom prompt
                 // Wait for zoom to settle (e.g., 2000 milliseconds = 2 seconds)

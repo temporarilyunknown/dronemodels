@@ -26,12 +26,11 @@
             background-color: #222;
             z-index: 5;
             transition: opacity 1.5s ease-in-out;
-            /* Changed: Removed pointer-events: none so it blocks clicks while loading */
         }
 
         #loading-overlay.hidden {
             opacity: 0;
-            pointer-events: none; /* Add it here so clicks pass through AFTER it hides */
+            pointer-events: none; /* Clicks pass through AFTER it hides */
         }
 
         #loading-logo {
@@ -46,35 +45,39 @@
             transition: opacity 0.5s ease;
         }
 
-        #loading-logo.hidden { opacity: 0; }
+        #loading-logo.hidden {
+            opacity: 0;
+        }
 
-        /* Spinner replaced with Progress Bar for better UX */
-        #progress-container {
+        /* Restored Original Spinner */
+        #spinner {
             position: absolute;
             top: calc(44% + 140px);
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 200px;
-            height: 4px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 2px;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top: 4px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
             z-index: 10;
-            overflow: hidden;
             transition: opacity 0.5s ease;
         }
 
-        #progress-container.hidden { opacity: 0; }
-
-        #progress-bar {
-            height: 100%;
-            width: 0%;
-            background-color: #ffffff;
-            transition: width 0.1s linear;
+        #spinner.hidden {
+            opacity: 0;
         }
 
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Loading Text with Fade */
         #loading-text {
             position: absolute;
-            top: calc(44% + 170px); /* Adjusted spacing */
+            top: calc(44% + 210px);
             left: 50%;
             transform: translate(-50%, -50%);
             color: #ffffff;
@@ -83,11 +86,15 @@
             letter-spacing: 3px;
             text-transform: uppercase;
             z-index: 10;
-            opacity: 0.7;
-            transition: opacity 0.5s ease;
+            opacity: 0.7; /* Base opacity */
+            transition: opacity 0.5s ease; /* Controls the fade speed */
+            white-space: nowrap;
         }
 
-        #loading-text.hidden { opacity: 0; }
+        /* Used strictly for the complete hide on load */
+        #loading-text.hidden {
+            opacity: 0 !important;
+        }
 
         /* --- Dark Header UI --- */
         #title-container {
@@ -175,11 +182,8 @@
     <div id="loading-overlay"></div>
     
     <img id="loading-logo" src="LogoF.png" alt="Loading Logo">
-    
-    <div id="progress-container">
-        <div id="progress-bar"></div>
-    </div>
-    <div id="loading-text">Loading 0%</div>
+    <div id="spinner"></div>
+    <div id="loading-text">Loading Model</div>
 
     <div id="title-container">
         <h1 id="building-title">Gannett Building</h1>
@@ -191,11 +195,10 @@
     <model-viewer 
         id="gannett-viewer"
         src="Gannett-Drive-4-10-2026-textured_model.glb" 
-        skybox-image="skycomp.hdr"
-        environment-image="skycomp.hdr"
+        skybox-image="sky3.hdr"
         ar 
         ar-modes="webxr scene-viewer quick-look"  
-        rotation-per-second="3deg"
+        rotation-per-second="3.15deg"
         tone-mapping="neutral" 
         poster="poster.webp" 
         shadow-intensity="1" 
@@ -214,26 +217,42 @@
         const titleContainer = document.getElementById('title-container');
         const overlay = document.getElementById('loading-overlay');
         const loadingLogo = document.getElementById('loading-logo');
-        const progressContainer = document.getElementById('progress-container');
-        const progressBar = document.getElementById('progress-bar');
+        const spinner = document.getElementById('spinner');
         const loadingText = document.getElementById('loading-text');
         const customPrompt = document.getElementById('custom-prompt');
 
-        // Update progress bar and text while downloading
-        viewer.addEventListener('progress', (event) => {
-            const percent = Math.round(event.detail.totalProgress * 100);
-            loadingText.textContent = `LOADING ${percent}%`;
-            progressBar.style.width = `${percent}%`;
-        });
+        // --- Fading Text Logic ---
+        const phrases = [
+            "Loading Model", 
+            "Preparing 3D Environment", 
+            "Optimizing Textures", 
+            "Almost Ready"
+        ];
+        let phraseIndex = 0;
 
-        // Animation sequence on load
+        // Cycles text every 2.5 seconds
+        const loadingInterval = setInterval(() => {
+            loadingText.style.opacity = '0'; // Fade out
+            
+            setTimeout(() => {
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                loadingText.textContent = phrases[phraseIndex];
+                loadingText.style.opacity = '0.7'; // Fade back in
+            }, 500); // Wait 500ms for the CSS fade-out to complete before changing text
+        }, 2500);
+
+        // --- Animation sequence on load ---
         viewer.addEventListener('load', () => {
-            // 1. Hide logo, progress bar, and loading text immediately
+            
+            // 1. Stop the text from cycling
+            clearInterval(loadingInterval);
+
+            // 2. Hide logo, spinner, and loading text immediately
             loadingLogo.classList.add('hidden');
-            progressContainer.classList.add('hidden');
+            spinner.classList.add('hidden');
             loadingText.classList.add('hidden');
 
-            // 2. Wait 800ms, then trigger black overlay fade
+            // 3. Wait 800ms, then trigger black overlay fade
             setTimeout(() => {
                 overlay.classList.add('hidden'); 
 
@@ -254,7 +273,7 @@
                     // Turn on auto-rotation
                     viewer.autoRotate = true; 
                     
-                    // ENABLE CAMERA CONTROLS NOW
+                    // Give user control now that animations are done
                     viewer.setAttribute('camera-controls', '');
                     
                 }, 3200); 

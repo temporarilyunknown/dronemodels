@@ -57,89 +57,103 @@
             100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-     /* Title & Logo Container */
-#title-container {
-    position: absolute;
-    top: 50%; 
-    left: 50%;
-    transform: translate(-50%, -50%); 
-    display: flex;
-    flex-direction: column; /* Stacks the logo above the text */
-    align-items: center;
-    justify-content: center;
-    gap: 10px; /* Reduced gap since they are stacked */
-    pointer-events: none;
-    z-index: 10;
-    transition: all 1.5s ease-in-out; 
-}
+        /* Title & Logo Container */
+        #title-container {
+            position: absolute;
+            top: 50%; 
+            left: 50%;
+            transform: translate(-50%, -50%); 
+            display: flex;
+            flex-direction: column; /* Stacks the logo above the text */
+            align-items: center;
+            justify-content: center;
+            gap: 10px; /* Reduced gap since they are stacked */
+            pointer-events: none;
+            z-index: 10;
+            transition: all 1.5s ease-in-out; 
+        }
 
-#title-container.zoomed {
-    top: 5%; 
-    /* Shrinks the stacked grouping slightly so it isn't overwhelming at the top */
-    transform: translate(-50%, 0) scale(0.75); 
-}
+        #title-container.zoomed {
+            top: 5%; 
+            /* Shrinks the stacked grouping slightly so it isn't overwhelming at the top */
+            transform: translate(-50%, 0) scale(0.75); 
+        }
 
-#building-title {
-    margin: 0;
-    color: #ffffff;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 2.5rem;
-    letter-spacing: 2px;
-    opacity: 0.85;
-    text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
-}
+        #building-title {
+            margin: 0;
+            color: #ffffff;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            opacity: 0.85;
+            text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
+        }
 
-#building-logo {
-    height: 120px; /* Significantly increased for the loading screen */
-    width: auto;
-    opacity: 1; /* Bumped to 100% for better visibility */
-    mix-blend-mode: screen; 
-    /* Optional: If the logo is still too dark, uncomment the line below to brighten it */
-    /* filter: brightness(1.5) drop-shadow(0px 4px 10px rgba(0,0,0,0.5)); */
-}
+        #building-logo {
+            height: 120px; /* Significantly increased for the loading screen */
+            width: auto;
+            opacity: 1; /* Bumped to 100% for better visibility */
+            mix-blend-mode: screen; 
+            /* Optional: If the logo is still too dark, uncomment the line below to brighten it */
+            /* filter: brightness(1.5) drop-shadow(0px 4px 10px rgba(0,0,0,0.5)); */
+        }
 
-/* Custom Interaction Prompt */
-#custom-prompt {
-    position: absolute;
-    bottom: 12%;
-    left: 50%;
-    transform: translateX(-50%);
+        /* Custom Interaction Prompt */
+        #custom-prompt {
+            position: absolute;
+            bottom: 12%;
+            left: 50%;
+            transform: translateX(-50%);
+            
+            /* Sleek Glassmorphism Styling */
+            background-color: rgba(20, 20, 20, 0.4); /* Highly transparent dark background */
+            backdrop-filter: blur(8px); /* Blurs the 3D model slightly behind the prompt */
+            -webkit-backdrop-filter: blur(8px); /* Safari support */
+            border: 1px solid rgba(255, 255, 255, 0.15); /* Subtle border for edge definition */
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); /* Soft, wide shadow */
+            
+            color: #ffffff;
+            padding: 12px 32px; /* Wider padding looks more modern */
+            border-radius: 50px; /* Fully rounded pill shape */
+            
+            /* Typography adjustments */
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 0.9rem; /* Slightly smaller text */
+            font-weight: 400;
+            text-transform: uppercase; /* All caps adds to the sleek UI feel */
+            letter-spacing: 2px; /* Wider spacing pairs well with uppercase */
+            
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0; 
+            transition: opacity 0.8s ease;
+            animation: pulse 2.5s infinite;
+        }
+
+        #custom-prompt.visible {
+            opacity: 1;
+        }
+
+        @keyframes pulse {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.02); } /* Reduced scale jump for a more subtle pulse */
+            100% { transform: translateX(-50%) scale(1); }
+        }
+    </style> 
+</head>  
+
+<body>
+
+    <div id="loading-overlay"></div>
+    <div id="spinner"></div>
+
+    <div id="title-container">
+        <img id="building-logo" src="Logo.png" alt="Gannett Logo">
+        <h1 id="building-title">Gannett Building</h1>
+    </div>
+
+    <div id="custom-prompt">Drag to interact</div>
     
-    /* Sleek Glassmorphism Styling */
-    background-color: rgba(20, 20, 20, 0.4); /* Highly transparent dark background */
-    backdrop-filter: blur(8px); /* Blurs the 3D model slightly behind the prompt */
-    -webkit-backdrop-filter: blur(8px); /* Safari support */
-    border: 1px solid rgba(255, 255, 255, 0.15); /* Subtle border for edge definition */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); /* Soft, wide shadow */
-    
-    color: #ffffff;
-    padding: 12px 32px; /* Wider padding looks more modern */
-    border-radius: 50px; /* Fully rounded pill shape */
-    
-    /* Typography adjustments */
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 0.9rem; /* Slightly smaller text */
-    font-weight: 400;
-    text-transform: uppercase; /* All caps adds to the sleek UI feel */
-    letter-spacing: 2px; /* Wider spacing pairs well with uppercase */
-    
-    pointer-events: none;
-    z-index: 10;
-    opacity: 0; 
-    transition: opacity 0.8s ease;
-    animation: pulse 2.5s infinite;
-}
-
-#custom-prompt.visible {
-    opacity: 1;
-}
-
-@keyframes pulse {
-    0% { transform: translateX(-50%) scale(1); }
-    50% { transform: translateX(-50%) scale(1.02); } /* Reduced scale jump for a more subtle pulse */
-    100% { transform: translateX(-50%) scale(1); }
-}
-</style> </head>  <body>>
     <model-viewer 
         id="gannett-viewer"
         src="Gannett-Drive-4-10-2026-textured_model.glb" 
@@ -157,7 +171,8 @@
         max-camera-orbit="auto 90deg 500m" 
         min-camera-orbit="auto auto 25.4m" 
         min-field-of-view="4deg"
-        interaction-prompt="none"> </model-viewer>
+        interaction-prompt="none"> 
+    </model-viewer>
 
     <script>
         const viewer = document.getElementById('gannett-viewer');
